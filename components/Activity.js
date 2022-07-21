@@ -26,8 +26,8 @@ function Activity() {
       for (let i = 0; i < activities.length; i++) {
         let item = activities[i]
         if (item[0] == addy) {
-          let a = activities.splice(i, i + 1)
-          setActivities(a)
+          let c = activities.splice(i, i + 1)
+          setActivities(c)
         }
       }
       setActivities((arr) => [...arr, [addy, getMsg]])
