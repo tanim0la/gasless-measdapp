@@ -6,29 +6,39 @@ function Activity() {
 
   let a = useRef([])
   useEffect(() => {
-    const ab = async () => {
-      const addresses = await contract.getAddresses()
-
-      for (let i = 0; i < addresses.length; i++) {
-        const getMsg = await contract.users(addresses[i])
-        a.current[i] = [addresses[i], getMsg]
-      }
-      setActivities(a.current)
-
-      contract.on('newMessages', async (addy, _message) => {
-        const getMsg = await contract.users(addy)
-
-        setActivities((arr) => [...arr, [addy, getMsg]])
-      })
-    }
-
     ab()
   }, [])
+
+  const ab = async () => {
+    const addresses = await contract.getAddresses()
+
+    for (let i = 0; i < addresses.length; i++) {
+      const getMsg = await contract.users(addresses[i])
+      a.current[i] = [addresses[i], getMsg]
+    }
+    setActivities(a.current)
+
+    if (activities) {
+    }
+    contract.on('newMessages', async (addy, _message) => {
+      const getMsg = await contract.users(addy)
+
+      for (let i = 0; i < activities.length; i++) {
+        let item = activities[i]
+        if (item[0] == addy) {
+          let a = activities.splice(i, i + 1)
+          setActivities(a)
+        }
+      }
+      setActivities((arr) => [...arr, [addy, getMsg]])
+    })
+  }
 
   const getActivites = () => {
     if (activities.length > 10) {
       let num = activities.length - 10
-      activities.slice(num)
+      let b = activities.slice(num)
+      setActivities(b)
     }
     const newActivities = activities.reverse()
     const item = newActivities.map((activity, index) => {
