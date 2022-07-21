@@ -25,12 +25,15 @@ export default function Message() {
     ourContract: '0xb836B5Ba2c9165afFf31fC39049Fbf42E58e2043',
   }
 
-  const connectt = async () => {
-    accounts = await window.ethereum.request({
-      method: 'eth_accounts',
-    })
+   const connectt = async () => {
+    if (
+      typeof window !== 'undefined' &&
+      typeof window.ethereum !== 'undefined'
+    ) {
+      accounts = await window.ethereum.request({
+        method: 'eth_accounts',
+      })
 
-    if (accounts[0]) {
       setAddress(accounts[0])
       setButtonMsg('Post Message')
       setConnected(true)
@@ -60,7 +63,7 @@ export default function Message() {
         })
         .onEvent(biconomy.ERROR, (error, message) => {
           // Handle error while initializing mexa
-          console.log('Ayscoopy: ' + message)
+          console.log(message)
         })
     } else {
       setAddress('Not Connected')
@@ -68,7 +71,7 @@ export default function Message() {
       setConnected(false)
     }
   }
-
+   
   const messagee = async () => {
     const cMessage = await contract.message()
     setContractMessage(cMessage)
