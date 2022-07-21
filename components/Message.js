@@ -25,7 +25,7 @@ export default function Message() {
     ourContract: '0xb836B5Ba2c9165afFf31fC39049Fbf42E58e2043',
   }
 
-   const connectt = async () => {
+  const connectt = async () => {
     if (
       typeof window !== 'undefined' &&
       typeof window.ethereum !== 'undefined'
@@ -33,45 +33,50 @@ export default function Message() {
       accounts = await window.ethereum.request({
         method: 'eth_accounts',
       })
+      if (accounts[0]) {
+        setButtonMsg('Post Message')
+        setConnected(true)
+        setAddress(accounts[0])
 
-      setAddress(accounts[0])
-      setButtonMsg('Post Message')
-      setConnected(true)
-
-      biconomy = new Biconomy(window.ethereum, {
-        walletProvider: window.ethereum,
-        apiKey: 'W8lnvPL_Q.d9ad4001-5909-4097-beb6-a51135201fb8',
-        contractAddresses: [conf.ourContract],
-        debug: true,
-      })
-
-      biconomy
-        .onEvent(biconomy.READY, async () => {
-          // Initialize your dapp here like getting user accounts etc
-          ethersProvider = new ethers.providers.Web3Provider(biconomy)
-          walletProvider = new ethers.providers.Web3Provider(window.ethereum)
-          walletSigner = walletProvider.getSigner()
-
-          let userAddress = await walletSigner.getAddress()
-          setSelectedAddress(userAddress)
-
-          contractt = new ethers.Contract(
-            conf.ourContract,
-            compiledMessageV4.abi,
-            biconomy.getSignerByAddress(userAddress),
-          )
+        biconomy = new Biconomy(window.ethereum, {
+          walletProvider: window.ethereum,
+          apiKey: 'W8lnvPL_Q.d9ad4001-5909-4097-beb6-a51135201fb8',
+          contractAddresses: [conf.ourContract],
+          debug: true,
         })
-        .onEvent(biconomy.ERROR, (error, message) => {
-          // Handle error while initializing mexa
-          console.log(message)
-        })
+
+        biconomy
+          .onEvent(biconomy.READY, async () => {
+            // Initialize your dapp here like getting user accounts etc
+            ethersProvider = new ethers.providers.Web3Provider(biconomy)
+            walletProvider = new ethers.providers.Web3Provider(window.ethereum)
+            walletSigner = walletProvider.getSigner()
+
+            let userAddress = await walletSigner.getAddress()
+            setSelectedAddress(userAddress)
+
+            contractt = new ethers.Contract(
+              conf.ourContract,
+              compiledMessageV4.abi,
+              biconomy.getSignerByAddress(userAddress),
+            )
+          })
+          .onEvent(biconomy.ERROR, (error, message) => {
+            // Handle error while initializing mexa
+            console.log(message)
+          })
+      } else {
+        setAddress('Not Connected')
+        setButtonMsg('Connect Wallet')
+        setConnected(false)
+      }
     } else {
       setAddress('Not Connected')
       setButtonMsg('Connect Wallet')
       setConnected(false)
     }
   }
-   
+
   const messagee = async () => {
     const cMessage = await contract.message()
     setContractMessage(cMessage)
@@ -201,3 +206,4 @@ export default function Message() {
     </>
   )
 }
+
