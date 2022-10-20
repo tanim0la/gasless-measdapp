@@ -67,35 +67,37 @@ contract MessageV4 is MessageV3 {
     
     mapping(address => bool) public check;
 
-    uint private start;
+    uint96 private start;
     address private temp;
 
     event newMessages(address addy, string _message);
 
 
     function postMessages(string memory _message) public override   {
+    	address m_sender = _msgSender();
+	uint96 len = addresses.length;
         message = _message;
-        if(check[_msgSender()]){
-            users[_msgSender()] = _message;
-            for( uint i=0; i<addresses.length; i++){
-                if(addresses[i] == _msgSender()){
+        if(check[m_sender]){
+            users[m_sender] = _message;
+            for( uint i=0; i<len; i++){
+                if(addresses[i] == m_sender){
                     start = i;
                     break;
                 }
             }
-            for(uint i=start; i<addresses.length-1; i++){
+            for(uint i=start; i<len-1; i++){
                 temp = addresses[i];
                 addresses[i] = addresses[i+1];
                 addresses[i+1] = temp;
             }
         }else{
-            users[_msgSender()] = _message;
-            check[_msgSender()] = true;
+            users[m_sender] = _message;
+            check[m_sender] = true;
 
-            addresses.push(_msgSender());
+            addresses.push(m_sender);
         }
 
-        emit newMessages(_msgSender(), _message);
+        emit newMessages(m_sender, _message);
 
     }
 
